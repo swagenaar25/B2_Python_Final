@@ -141,7 +141,7 @@ class CommandSet:
         except Exception as e:  # noqa
             problem = "Something went wrong while executing that command:\n\t"
             problem += helpers.error_string(e)
-            self.output(helpers.error(problem))
+            self.output(helpers.error_format(problem))
 
     def _execute(self, string: str) -> typing.Any:
         """Executes given command string.

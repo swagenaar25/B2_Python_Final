@@ -1,10 +1,10 @@
-__all__ = ["error", "error_string", "random_color"]
+__all__ = ["error_format", "error_string", "random_color"]
 
 from colorama import Fore
 import random
 
 
-def error(msg: str) -> str:
+def error_format(msg: str) -> str:
     return Fore.RED + msg + Fore.RESET
 
 

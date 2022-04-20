@@ -8,7 +8,7 @@ from helpers import random_color
 
 class TurtleCallbacks:
     """Controller for a turtle, use with commands"""
-    def __init__(self, pen: turtle.Turtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
+    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
         """Initialize callbacks
 
         :param pen: Turtle object to control
