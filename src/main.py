@@ -33,11 +33,7 @@ from callbacks import TurtleCallbacks
 from standard_command_set import StandardCommandSet
 import helpers
 
-# window = turtle.Screen()
-# window.title("Final Project Sam Wagenaar")
-
-# bob = turtle.Turtle()
-# bob.shape("classic")
+helpers.license_notice()
 
 kg = True
 
@@ -47,28 +43,9 @@ def quit_callback():
     kg = False
 
 
-#####################
-# Register commands #
-#####################
-# standardCommandSet = StandardCommandSet(bob, window, quit_callback, print)
-
 ###########
 # Run GUI #
 ###########
-
-'''
-print("Type `help` for help")
-
-while kg:
-    com = input(">> ")
-    try:
-        standardCommandSet.user_input(com)
-    except InvalidCommandError as e:
-        problem = "[LOOP] Something went wrong while executing that command:\n\t"
-        problem += error_string(e)
-        print(error_format(problem))'''
-
-
 class App:
     def __init__(self, master: tk.Tk):
         self.master = master
@@ -106,12 +83,6 @@ class App:
                                    font=self.get_font(),
                                    state=tk.DISABLED)
         self.console_out.pack(side=tk.TOP, fill=tk.BOTH)
-        # Testing:
-        # self.add_to_console(f"{Fore.RED}red text{Fore.GREEN}{Style.BRIGHT}Green bold text{Fore.RESET}Normal bold text{Back.MAGENTA}Magenta highlight bold text{Style.RESET_ALL}normal text")
-        # self.add_to_console(f"{Fore.LIGHTWHITE_EX}bright white text{Fore.BLUE}blue")
-        # self.add_to_console(f"Should be on newline normal")
-        # self.add_to_console(f"{Style.DIM}this is italic{Style.NORMAL} but this isn't")
-        # self.add_to_console(f"\thello")
 
         self.console_in = tk.Text(self.console_frame,
                                   height=1,
@@ -143,8 +114,8 @@ class App:
                                                   "None",
                                                   event.widget))
         event.widget.configure(state=tk.DISABLED)
-        self.standardCommandSet.user_input(string)
         try:
+            self.standardCommandSet.user_input(string)
             event.widget.configure(state=tk.NORMAL)
             event.widget.after(0, lambda: event.widget.delete("1.0", tk.END))
         except tk.TclError:  # Quit run, widget no longer exists

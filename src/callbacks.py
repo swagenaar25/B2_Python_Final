@@ -24,6 +24,8 @@ from helpers import random_color
 
 class TurtleCallbacks:
     """Controller for a turtle, use with commands"""
+    MINIMUM_BRANCH_LENGTH = 5
+
     def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
         """Initialize callbacks
 
@@ -85,3 +87,15 @@ class TurtleCallbacks:
 
     def reset(self):
         self.screen.reset()
+
+    # Fractals
+    def tree_fractal(self, branch_length, shorten_by, angle):
+        if branch_length > self.MINIMUM_BRANCH_LENGTH:
+            self.pen.forward(branch_length)
+            new_length = branch_length - shorten_by
+            self.pen.left(angle)
+            self.tree_fractal(new_length, shorten_by, angle)
+            self.pen.right(angle * 2)
+            self.tree_fractal(new_length, shorten_by, angle)
+            self.pen.left(angle)
+            self.pen.backward(branch_length)

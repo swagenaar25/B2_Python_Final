@@ -48,7 +48,8 @@ class StandardCommandSet:
         self.commandSet.register(Command("pendown", "Lower pen\n", 0, [], self.call.pendown))
 
         self.commandSet.register(Command("forward", "Move forward 50 pixels", 0, [], self.call.forward, [50]))
-        self.commandSet.register(Command("forward", "Move forward ```distance``` pixels\n", 1, [int], self.call.forward))
+        self.commandSet.register(
+            Command("forward", "Move forward ```distance``` pixels\n", 1, [int], self.call.forward))
 
         self.commandSet.register(Command("back", "Move back 50 pixels", 0, [], self.call.back, [50]))
         self.commandSet.register(Command("back", "Move back ```distance``` pixels\n", 1, [int], self.call.back))
@@ -61,6 +62,21 @@ class StandardCommandSet:
 
         self.commandSet.register(Command("random", "Plot 20 random lines", 0, [], self.call.random, [20]))
         self.commandSet.register(Command("random", "Plot ```number``` random lines", 1, [int], self.call.random))
+        self.commandSet.register(Command(
+            "tree_fractal",
+            "Plot a tree fractal with starting branch length of 50, shortening of 5, and angle of 30",
+            0,
+            [],
+            self.call.tree_fractal,
+            [50, 5, 30]
+        ))
+        self.commandSet.register(Command(
+            "tree_fractal",
+            "Plot a tree fractal with starting branch length of ```branch_length```, shortening of ```shorten_by```, and angle of ```angle```",  # noqa
+            3,
+            [int, int, int],
+            self.call.tree_fractal
+        ))
 
         self.commandSet.register(Command("color", "Set pen to ```color```", 1, [str], self.call.color))
         self.commandSet.register(Command("bgcolor", "Set background to ```color```", 1, [str], self.call.bgcolor))

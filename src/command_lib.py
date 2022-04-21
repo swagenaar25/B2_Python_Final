@@ -146,7 +146,7 @@ class CommandSet:
 
         :param original: original name of commands
         :param aliased: aliased name of commands
-        :return:
+        :return: None
         """
         self.commands[aliased] = ("ALIAS", original)
 
