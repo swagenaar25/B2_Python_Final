@@ -19,9 +19,11 @@ Copyright (C) 2022  Sam Wagenaar
 """
 
 import typing
+import os
 from ordered_set import OrderedSet
 from colorama import Fore, Style
 import helpers
+from callbacks import TurtleCallbacks
 
 
 class InvalidCommandError(AttributeError):
@@ -42,6 +44,55 @@ def stylize(string: str, style, reset):
 
 
 arg_col = Fore.BLUE
+
+
+class HistoryKeeper:
+    def __init__(self):
+        self.history = []
+
+    def reset(self):
+        self.history.clear()
+
+    def remove_last(self):
+        if len(self.history) > 0:
+            self.history.pop(-1)
+
+    def add(self, command: str):
+        if command == "reset":
+            self.reset()
+        elif command != "undo":
+            self.history.append(command)
+
+    def save(self, name: str):
+        """Saves history to file
+
+        :param name: File to save to
+        :return: None
+        """
+        name = os.path.basename(name).split(".")[0]
+        file_path = helpers.resource_path(os.path.join("saves", name))
+        out = ""
+        for command in self.history:
+            out += command + "\n"
+        f = open(file_path, "w")
+        f.write(out)
+        f.close()
+
+    def load(self, name: str):
+        """Loads history from file
+
+        :param name: File to load from
+        :return: None
+        """
+        self.reset()
+        name = os.path.basename(name).split(".")[0]
+        file_path = helpers.resource_path(os.path.join("saves", name))
+        contents = open(file_path).read().split("\n")
+        for command in contents:
+            if command != "" and command != "quit" and command != "exit":
+                self.add(command)
+
+
 # End Helpers
 
 
@@ -100,12 +151,43 @@ class CommandSet:
     However, this can be used to create sub-commands.
     """
 
-    def __init__(self, output: typing.Callable[[str], None]):
+    def __init__(self, output: typing.Callable[[str], None], callbacks: TurtleCallbacks):
         """Initialize an empty CommandSet"""
         self.commands = {}
-        self.register(Command("help", "Display help for all commands.", 0, [], self.help))
-        self.register(Command("help", "Display help for specified ```command```.", 1, [str], self.help))
+        self.register(Command("help", "Display help for all commands", 0, [], self.help))
+        self.register(Command("help", "Display help for specified ```command```", 1, [str], self.help))
+        self.register(Command("save", "Save current drawing to ```file```", 1, [str], self.save))
+        self.register(Command("load", "Load drawing from ```file```", 1, [str], self.load))
+        self.register(Command("undo", "Undo previous command (does not work on reset)", 0, [], self.undo))
         self.output = output
+        self.callbacks = callbacks
+        self.history_keeper = HistoryKeeper()
+
+    def run_history(self, show_out: bool = False):
+        for command in self.history_keeper.history:
+            try:
+                self._execute(command)
+                if show_out:
+                    self.output(f"{Fore.LIGHTWHITE_EX}>> {command}{Style.RESET_ALL}")
+            except Exception as e:  # noqa
+                problem = f"Something went wrong while loading command [{command}]:\n\t"
+                problem += helpers.error_string(e)
+                self.output(helpers.error_format(problem))
+
+    def undo(self):
+        self.callbacks.reset()
+        self.history_keeper.remove_last()
+        self.run_history()
+        self.output(f"Undid one command")
+
+    def load(self, file: str):
+        self.callbacks.clear()
+        self.history_keeper.load(file)
+        self.callbacks.reset()
+        self.run_history(True)
+
+    def save(self, file: str):
+        self.history_keeper.save(file)
 
     def help(self, command: str = None):
         if command is None:
@@ -124,12 +206,13 @@ class CommandSet:
                     if len(arg_list) > 0 and arg_list[0] == "self":
                         arg_list = arg_list[1:]
                     arg_list = arg_list[:com.num_args]
-                    help_msg = Style.BRIGHT+Fore.GREEN + command + arg_col
+                    help_msg = Style.BRIGHT + Fore.GREEN + command + arg_col
                     for i in range(com.num_args):
-                        help_msg += " "+arg_list[i]  # +":"+com.types[i].__name__
+                        help_msg += " " + arg_list[i]  # +":"+com.types[i].__name__
                     help_msg += Style.RESET_ALL
                     if com.help_msg != "":
-                        help_msg += "\n\t"+Fore.CYAN+stylize(com.help_msg, arg_col+Style.BRIGHT, Fore.CYAN+Style.NORMAL)
+                        help_msg += "\n\t" + Fore.CYAN + stylize(com.help_msg, arg_col + Style.BRIGHT,
+                                                                 Fore.CYAN + Style.NORMAL)
                     help_msg += Style.RESET_ALL
                     self.output(help_msg)
             except KeyError:
@@ -154,6 +237,7 @@ class CommandSet:
         """Wrapper around self._execute to handle exceptions"""
         try:
             self._execute(string)
+            self.history_keeper.add(string)
         except Exception as e:  # noqa
             problem = "Something went wrong while executing that command:\n\t"
             problem += helpers.error_string(e)

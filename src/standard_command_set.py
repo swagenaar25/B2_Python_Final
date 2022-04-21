@@ -28,21 +28,23 @@ class StandardCommandSet:
                  pen: turtle.RawTurtle,
                  screen: turtle.TurtleScreen,
                  quit_callback: typing.Callable[[None], None],
-                 output_callback: typing.Callable[[str], None]):
+                 output_callback: typing.Callable[[str], None],
+                 clear_console: typing.Callable[[None], None]):
         """Create a standard set of commands for turtle interaction
         
         :param pen: Turtle to draw with
         :param screen: Screen to draw on
         :param quit_callback: Callback to quit program
         :param output_callback: Callback to send command output to
+        :param clear_console: Callback to clear output
         """
         self.pen = pen
         self.screen = screen
         self.quit_callback = quit_callback
         self.output_callback = output_callback
 
-        self.commandSet = CommandSet(self.output_callback)
-        self.call = TurtleCallbacks(self.pen, self.screen, self.commandSet.output)
+        self.call = TurtleCallbacks(self.pen, self.screen, self.output_callback, clear_console)
+        self.commandSet = CommandSet(self.output_callback, self.call)
 
         self.commandSet.register(Command("penup", "Raise pen", 0, [], self.call.penup))
         self.commandSet.register(Command("pendown", "Lower pen\n", 0, [], self.call.pendown))
@@ -113,7 +115,8 @@ class StandardCommandSet:
         self.commandSet.register(Command("pos", "Show pen's position", 0, [], self.call.pos))
         self.commandSet.register(Command("heading", "Show pen's heading", 0, [], self.call.heading))
 
-        self.commandSet.register(Command("reset", "Reset everything\n", 0, [], self.call.reset))
+        self.commandSet.register(Command("reset", "Reset everything", 0, [], self.call.reset))
+        self.commandSet.register(Command("clear", "Clear console\n", 0, [], self.call.clear))
 
         self.commandSet.register(Command("quit", "Close the canvas\n", 0, [], self.quit_callback))
         self.commandSet.alias("quit", "exit")

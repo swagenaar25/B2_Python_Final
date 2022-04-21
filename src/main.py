@@ -100,8 +100,9 @@ class App:
         self.standardCommandSet = StandardCommandSet(self.my_lovely_turtle,
                                                      self.screen,
                                                      self.master.destroy,
-                                                     self.add_to_console)
-        self.add_to_console(f"{Style.BRIGHT}{Fore.YELLOW}Type `help` for help{Style.RESET_ALL}")
+                                                     self.add_to_console,
+                                                     self.clear_console)
+        self.clear_console()
 
     def console_input(self, event):
         string = event.widget.get("1.0", tk.END + " -1 char")
@@ -127,6 +128,7 @@ class App:
         self.console_out.configure(state=tk.DISABLED)  # User else needs to not write
         # Autoscroll
         self.console_out.see("end")
+        self.add_to_console(f"{Style.BRIGHT}{Fore.YELLOW}Type `help` for help{Style.RESET_ALL}")
 
     def _tag_from_params(self, fmt: str, fore_color: str, back_color: str, widget: tk.Text = None) -> str:
         """Create a formatting tag from given parameters

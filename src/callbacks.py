@@ -27,16 +27,18 @@ class TurtleCallbacks:
     """Controller for a turtle, use with commands"""
     MINIMUM_BRANCH_LENGTH = 5
 
-    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
+    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None], reset_console: typing.Callable[[None], None]):
         """Initialize callbacks
 
         :param pen: Turtle object to control
         :param screen: Screen object to control
         :param output: Callable for output
+        :param reset_console: Callable to reset console
         """
         self.pen = pen
         self.screen = screen
         self.output = output
+        self.reset_console = reset_console
 
     def penup(self):
         self.pen.penup()
@@ -88,6 +90,9 @@ class TurtleCallbacks:
 
     def reset(self):
         self.screen.reset()
+
+    def clear(self):
+        self.reset_console()
 
     # Fractals
     def tree_fractal(self, branch_length, shorten_by, angle):
