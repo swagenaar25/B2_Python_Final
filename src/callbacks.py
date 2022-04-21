@@ -19,6 +19,7 @@ __all__ = ["TurtleCallbacks"]
 import typing
 import turtle
 import random
+import math
 from helpers import random_color
 
 
@@ -99,3 +100,40 @@ class TurtleCallbacks:
             self.tree_fractal(new_length, shorten_by, angle)
             self.pen.left(angle)
             self.pen.backward(branch_length)
+
+    def koch_line(self, branch_length: float, scale: float):  # shorten by 1/3 every time
+        if branch_length > 3:
+            # ___
+            self.koch_line(branch_length / 3, scale)
+            self.pen.left(60)  # /
+            self.koch_line(branch_length / 3, scale)
+            self.pen.right(120)  # \
+            self.koch_line(branch_length / 3, scale)
+            self.pen.left(60)  # ___
+            self.koch_line(branch_length / 3, scale)
+        else:
+            self.pen.forward(branch_length*scale)
+
+    def _koch_snowflake(self, branch_length: float, sides: int, scale: float):
+        start_pos = self.pen.pos()
+        start_heading = self.pen.heading()
+        sum_of_interior = (sides - 2) * 180
+        interior_angle = sum_of_interior / sides
+        self.pen.setheading(90 + (180 / sides) + start_heading)
+        self.pen.penup()
+        radius = (branch_length * scale) / (2 * math.sin(math.pi / sides))  # Center
+        self.pen.forward(radius)
+        self.pen.pendown()
+        self.pen.setheading(0 + start_heading)
+        for _ in range(sides):
+            # t.forward(branch_length)
+            self.koch_line(branch_length, scale)
+            self.pen.right(180 - interior_angle)
+        # Reset
+        self.pen.penup()
+        self.pen.goto(*start_pos)
+        self.pen.setheading(start_heading)
+        self.pen.pendown()
+
+    def koch_snowflake(self, sides: int, depth: int, scale: float = 1.0):
+        self._koch_snowflake(3**depth, sides, scale)

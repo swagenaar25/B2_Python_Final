@@ -77,6 +77,30 @@ class StandardCommandSet:
             [int, int, int],
             self.call.tree_fractal
         ))
+        self.commandSet.register(Command(
+            "koch_snowflake",
+            "Plot a 3-sided koch snowflake fractal with a depth of 5",
+            0,
+            [],
+            self.call.koch_snowflake,
+            [3, 5]
+        ))
+        self.commandSet.register(Command(
+            "koch_snowflake",
+            "Plot a ```sides``` sided koch snowflake fractal with a depth of ```depth```",
+            2,
+            [int, float],
+            self.call.koch_snowflake
+        ))
+        self.commandSet.register(Command(
+            "koch_snowflake",
+            "Plot a ```sides``` sided koch snowflake fractal with a depth of ```depth``` and scale of ```scale```",
+            3,
+            [int, float, float],
+            self.call.koch_snowflake
+        ))
+        self.commandSet.alias("koch_snowflake", "snowflake")
+        self.commandSet.alias("snowflake", "snow")
 
         self.commandSet.register(Command("color", "Set pen to ```color```", 1, [str], self.call.color))
         self.commandSet.register(Command("bgcolor", "Set background to ```color```", 1, [str], self.call.bgcolor))
