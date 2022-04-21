@@ -1,3 +1,19 @@
+"""
+Copyright (C) 2022  Sam Wagenaar
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 __all__ = ["TurtleCallbacks"]
 
 import typing
@@ -8,7 +24,7 @@ from helpers import random_color
 
 class TurtleCallbacks:
     """Controller for a turtle, use with commands"""
-    def __init__(self, pen: turtle.Turtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
+    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None]):
         """Initialize callbacks
 
         :param pen: Turtle object to control

@@ -1,10 +1,26 @@
 __all__ = ["InvalidCommandError", "Command", "CommandSet"]
 __version__ = "1.0"
 __author__ = "Sam Wagenaar"
+"""
+Copyright (C) 2022  Sam Wagenaar
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 import typing
 from ordered_set import OrderedSet
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 import helpers
 
 
@@ -141,7 +157,7 @@ class CommandSet:
         except Exception as e:  # noqa
             problem = "Something went wrong while executing that command:\n\t"
             problem += helpers.error_string(e)
-            self.output(helpers.error(problem))
+            self.output(helpers.error_format(problem))
 
     def _execute(self, string: str) -> typing.Any:
         """Executes given command string.
