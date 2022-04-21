@@ -43,6 +43,10 @@ def stylize(string: str, style, reset):
     return string
 
 
+def get_command_name(string: str):
+    return string.split(" ")[0]
+
+
 arg_col = Fore.BLUE
 
 
@@ -55,12 +59,12 @@ class HistoryKeeper:
 
     def remove_last(self):
         if len(self.history) > 0:
-            self.history.pop(-1)
+            return self.history.pop(-1)
 
     def add(self, command: str):
-        if command == "reset":
+        if command == "reset" or get_command_name(command) == "load":
             self.reset()
-        elif command != "undo":
+        elif command != "undo" and get_command_name(command) != "help":
             self.history.append(command)
 
     def save(self, name: str):
@@ -69,7 +73,7 @@ class HistoryKeeper:
         :param name: File to save to
         :return: None
         """
-        name = os.path.basename(name).split(".")[0]
+        name = os.path.basename(name).split(".")[0]+".txt"
         file_path = helpers.resource_path(os.path.join("saves", name))
         out = ""
         for command in self.history:
@@ -85,7 +89,7 @@ class HistoryKeeper:
         :return: None
         """
         self.reset()
-        name = os.path.basename(name).split(".")[0]
+        name = os.path.basename(name).split(".")[0]+".txt"
         file_path = helpers.resource_path(os.path.join("saves", name))
         contents = open(file_path).read().split("\n")
         for command in contents:
@@ -166,9 +170,9 @@ class CommandSet:
     def run_history(self, show_out: bool = False):
         for command in self.history_keeper.history:
             try:
-                self._execute(command)
                 if show_out:
                     self.output(f"{Fore.LIGHTWHITE_EX}>> {command}{Style.RESET_ALL}")
+                self._execute(command)
             except Exception as e:  # noqa
                 problem = f"Something went wrong while loading command [{command}]:\n\t"
                 problem += helpers.error_string(e)
@@ -176,9 +180,9 @@ class CommandSet:
 
     def undo(self):
         self.callbacks.reset()
-        self.history_keeper.remove_last()
+        name = self.history_keeper.remove_last() or "NONE"
         self.run_history()
-        self.output(f"Undid one command")
+        self.output(f"Undid one command: {name}")
 
     def load(self, file: str):
         self.callbacks.clear()
@@ -187,6 +191,7 @@ class CommandSet:
         self.run_history(True)
 
     def save(self, file: str):
+        self.history_keeper.remove_last()  # Don't save this command
         self.history_keeper.save(file)
 
     def help(self, command: str = None):
@@ -236,9 +241,10 @@ class CommandSet:
     def execute(self, string: str) -> typing.Any:
         """Wrapper around self._execute to handle exceptions"""
         try:
-            self._execute(string)
             self.history_keeper.add(string)
+            self._execute(string)
         except Exception as e:  # noqa
+            self.history_keeper.remove_last()  # Something went wrong, don't put in history
             problem = "Something went wrong while executing that command:\n\t"
             problem += helpers.error_string(e)
             self.output(helpers.error_format(problem))
