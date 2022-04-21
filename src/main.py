@@ -56,9 +56,9 @@ def quit_callback():
 # Run GUI #
 ###########
 
+'''
 print("Type `help` for help")
 
-'''
 while kg:
     com = input(">> ")
     try:
@@ -70,14 +70,13 @@ while kg:
 
 
 class App:
-    def __init__(self, master):
+    def __init__(self, master: tk.Tk):
         self.master = master
         self.master.title("Final Project Sam Wagenaar")
         self.canvas = tk.Canvas(master)
         self.canvas.config(width=600, height=600)
         self.canvas.pack(side=tk.LEFT)
         self.screen = turtle.TurtleScreen(self.canvas)
-        self.screen.bgcolor("cyan")
 
         self.fonts = {"regular": Font(file="assets/fonts/FantasqueSansMono-Regular.ttf",
                                       family="Fantasque Sans Mono",
@@ -107,29 +106,58 @@ class App:
                                    font=self.get_font(),
                                    state=tk.DISABLED)
         self.console_out.pack(side=tk.TOP, fill=tk.BOTH)
-        self.add_to_console(f"{Fore.RED}red text{Fore.GREEN}{Style.BRIGHT}Green bold text{Fore.RESET}Normal bold text{Back.MAGENTA}Magenta highlight bold text{Style.RESET_ALL}normal text")
-        self.add_to_console(f"{Fore.LIGHTWHITE_EX}bright white text{Fore.BLUE}blue")
-        self.add_to_console(f"Should be on newline normal")
-        self.add_to_console(f"{Style.DIM}this is italic{Style.NORMAL} but this isn't")
-        self.add_to_console(f"\thello")
+        # Testing:
+        # self.add_to_console(f"{Fore.RED}red text{Fore.GREEN}{Style.BRIGHT}Green bold text{Fore.RESET}Normal bold text{Back.MAGENTA}Magenta highlight bold text{Style.RESET_ALL}normal text")
+        # self.add_to_console(f"{Fore.LIGHTWHITE_EX}bright white text{Fore.BLUE}blue")
+        # self.add_to_console(f"Should be on newline normal")
+        # self.add_to_console(f"{Style.DIM}this is italic{Style.NORMAL} but this isn't")
+        # self.add_to_console(f"\thello")
 
         self.console_in = tk.Text(self.console_frame,
                                   height=1,
                                   relief=tk.GROOVE,
                                   background="#2b2b2b",
                                   foreground="#007F00",
-                                  font=self.get_font(italic=True))
+                                  font=self.get_font(italic=True),
+                                  insertbackground="#007F00")
+        self.console_in.bind("<Return>", self.console_input)
         self.console_in.pack(side=tk.TOP, fill=tk.X)
+        self.console_in.focus()
 
-        self.my_lovely_turtle = turtle.RawTurtle(self.screen, shape="turtle")
-        self.my_lovely_turtle.color("green")
+        self.my_lovely_turtle = turtle.RawTurtle(self.screen)
+
+        self.standardCommandSet = StandardCommandSet(self.my_lovely_turtle,
+                                                     self.screen,
+                                                     self.master.destroy,
+                                                     self.add_to_console)
+        self.add_to_console(f"{Style.BRIGHT}{Fore.YELLOW}Type `help` for help{Style.RESET_ALL}")
+
+    def console_input(self, event):
+        string = event.widget.get("1.0", tk.END + " -1 char")
+        self.add_to_console(f"{Fore.LIGHTWHITE_EX}>> {string}{Style.RESET_ALL}")
+        event.widget.delete("1.0", tk.END)
+        event.widget.insert("1.0",
+                            "Working...",
+                            self._tag_from_params("normal",
+                                                  helpers.ansi_to_hex(Fore.LIGHTYELLOW_EX)[1],
+                                                  "None",
+                                                  event.widget))
+        event.widget.configure(state=tk.DISABLED)
+        self.standardCommandSet.user_input(string)
+        try:
+            event.widget.configure(state=tk.NORMAL)
+            event.widget.after(0, lambda: event.widget.delete("1.0", tk.END))
+        except tk.TclError:  # Quit run, widget no longer exists
+            pass
 
     def clear_console(self):
         self.console_out.configure(state=tk.NORMAL)  # We need to be able to write
-        self.console_out.delete("0.0", tk.END)
+        self.console_out.delete("1.0", tk.END)
         self.console_out.configure(state=tk.DISABLED)  # User else needs to not write
+        # Autoscroll
+        self.console_out.see("end")
 
-    def _tag_from_params(self, fmt: str, fore_color: str, back_color: str) -> str:
+    def _tag_from_params(self, fmt: str, fore_color: str, back_color: str, widget: tk.Text = None) -> str:
         """Create a formatting tag from given parameters
 
         :param fmt: normal, bold, or italic
@@ -138,10 +166,14 @@ class App:
         :return: tag id
         """
         name = helpers.uuid()
-        self.console_out.tag_configure(name,
-                                       foreground=fore_color,
-                                       background=back_color,
-                                       font=self.get_font(bold=(fmt == "bold"), italic=(fmt == "italic")))
+        if widget is None:
+            widget = self.console_out
+        if back_color == "None":
+            back_color = None
+        widget.tag_configure(name,
+                             foreground=fore_color,
+                             background=back_color,
+                             font=self.get_font(bold=(fmt == "bold"), italic=(fmt == "italic")))
         return name
 
     def add_to_console(self, string: str, end: str = "\n"):
@@ -177,7 +209,7 @@ class App:
         ansi_in_progress = ""
         for char in string:
             if char == ansi_start:  # Ansi start encountered
-                print(segments)
+                # print(segments)
                 if building_text:  # We were building a segment of text, add it
                     segments.append((segment, self._tag_from_params(fmt, fore_color, back_color)))
                     segment = ""
@@ -188,9 +220,9 @@ class App:
                 building_ansi = True
                 building_text = False
                 ansi_in_progress = ansi_start
-                print(f"Ansi start character found, bt: {building_text}, ba: {building_ansi}")
+                # print(f"Ansi start character found, bt: {building_text}, ba: {building_ansi}")
             elif building_ansi:  # We are in the middle of an ansi escape sequence
-                print(f"fAnsi in progress: {ansi_in_progress.replace(ansi_start, safe_ansi_start)}")
+                # print(f"Ansi in progress: {ansi_in_progress.replace(ansi_start, safe_ansi_start)}")
                 ansi_in_progress += char
                 if char == ansi_end:  # Ansi sequence complete
                     if ansi_in_progress == Style.NORMAL:
@@ -222,10 +254,10 @@ class App:
                     ansi_in_progress = ""
                     building_ansi = False
             elif (not building_ansi) and (not building_text):  # We're not in an ansi sequence, and were in one before
-                print("Reached end of escape sequence set")
+                # print("Reached end of escape sequence set")
                 building_text = True
             if building_text:
-                print(f"Adding char: {char}")
+                # print(f"Adding char: {char}")
                 segment += char
         # Make sure the last bit isn't ignored
         if building_text:  # We were building a segment of text, add it
@@ -237,6 +269,8 @@ class App:
         for text, tag in segments:
             self.console_out.insert(tk.END, text, tag)
         self.console_out.configure(state=tk.DISABLED)  # User else needs to not write
+        # Autoscroll
+        self.console_out.see("end")
 
     def do_stuff(self):
         for color in ["red", "yellow", "green"]:
