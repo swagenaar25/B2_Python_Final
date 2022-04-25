@@ -55,6 +55,7 @@ class StandardCommandSet:
 
         self.commandSet.register(Command("back", "Move back 50 pixels", 0, [], self.call.back, [50]))
         self.commandSet.register(Command("back", "Move back ```distance``` pixels\n", 1, [int], self.call.back))
+        self.commandSet.alias("back", "backward")
 
         self.commandSet.register(Command("right", "Turn right 90 degrees", 0, [], self.call.right, [90]))
         self.commandSet.register(Command("right", "Turn right ```angle``` degrees\n", 1, [int], self.call.right))
@@ -62,6 +63,21 @@ class StandardCommandSet:
         self.commandSet.register(Command("left", "Turn left 90 degrees", 0, [], self.call.left, [90]))
         self.commandSet.register(Command("left", "Turn left ```angle``` degrees\n", 1, [int], self.call.left))
 
+        self.commandSet.register(Command(
+            "circle",
+            "Plot a circle with radius ```radius```",
+            1,
+            [float],
+            self.call.circle
+        ))
+        self.commandSet.register(Command(
+            "polygon",
+            "Plot a ```sides```-sided polygon with ```side_length```",
+            2,
+            [float, int],
+            self.call.polygon
+        ))
+        self.commandSet.alias("polygon", "poly")
         self.commandSet.register(Command("random", "Plot 20 random lines", 0, [], self.call.random, [20]))
         self.commandSet.register(Command("random", "Plot ```number``` random lines", 1, [int], self.call.random))
         self.commandSet.register(Command(
@@ -79,6 +95,7 @@ class StandardCommandSet:
             [int, int, int],
             self.call.tree_fractal
         ))
+        self.commandSet.alias("tree_fractal", "tree")
         self.commandSet.register(Command(
             "koch_snowflake",
             "Plot a 3-sided koch snowflake fractal with a depth of 5",
@@ -107,9 +124,12 @@ class StandardCommandSet:
         self.commandSet.register(Command("color", "Set pen to ```color```", 1, [str], self.call.color))
         self.commandSet.register(Command("bgcolor", "Set background to ```color```", 1, [str], self.call.bgcolor))
         self.commandSet.alias("bgcolor", "bg")
+        self.commandSet.register(Command("width", "Set pen width to ```width```", 1, [int], self.call.width))
         self.commandSet.register(Command("shape", "List pen shapes", 0, [], self.call.shapes))
         self.commandSet.register(Command("shape", "Set pen shape to ```shape```\n", 1, [str], self.call.shape))
 
+        self.commandSet.register(Command("sleep", "Wait ```secs``` seconds", 1, [float], self.call.sleep))
+        self.commandSet.register(Command("delay", "Set drawing delay to ```millis``` ms", 1, [int], self.call.delay))
         self.commandSet.register(Command("goto", "Move pen to (```x```, ```y```)\n", 2, [int, int], self.call.goto))
 
         self.commandSet.register(Command("pos", "Show pen's position", 0, [], self.call.pos))

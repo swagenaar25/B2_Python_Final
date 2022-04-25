@@ -18,6 +18,7 @@ __all__ = ["TurtleCallbacks"]
 
 import typing
 import turtle
+import time
 import random
 import math
 from helpers import random_color
@@ -27,7 +28,7 @@ class TurtleCallbacks:
     """Controller for a turtle, use with commands"""
     MINIMUM_BRANCH_LENGTH = 5
 
-    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None], reset_console: typing.Callable[[None], None]):
+    def __init__(self, pen: turtle.RawTurtle, screen: turtle.TurtleScreen, output: typing.Callable[[str], None], reset_console: typing.Callable[[], None]):
         """Initialize callbacks
 
         :param pen: Turtle object to control
@@ -58,6 +59,12 @@ class TurtleCallbacks:
     def left(self, angle: float):
         self.pen.left(angle)
 
+    def sleep(self, seconds: float):
+        time.sleep(seconds)
+
+    def delay(self, millis: int):
+        self.screen.delay(millis)
+
     def random(self, number: int):
         original_color = self.pen.color()[0]
         for _ in range(number):
@@ -67,6 +74,43 @@ class TurtleCallbacks:
             self.pen.goto(x, y)
         self.pen.color(original_color)
 
+    def polygon(self, side_length: float, sides: int):
+        start_pos = self.pen.pos()
+        start_heading = self.pen.heading()
+        sum_of_interior = (sides - 2) * 180
+        interior_angle = sum_of_interior / sides
+        self.pen.setheading(90 + (180 / sides) + start_heading)
+        self.pen.penup()
+        radius = side_length / (2 * math.sin(math.pi / sides))  # Center
+        self.pen.forward(radius)
+        self.pen.pendown()
+        self.pen.setheading(0 + start_heading)
+        for _ in range(sides):
+            self.pen.forward(side_length)
+            self.pen.right(180 - interior_angle)
+        # Reset
+        self.pen.penup()
+        self.pen.goto(*start_pos)
+        self.pen.setheading(start_heading)
+        self.pen.pendown()
+
+    def circle(self, radius: float):
+        start_pos = self.pen.pos()
+        start_heading = self.pen.heading()
+        # Position
+        self.pen.setheading(270)
+        self.pen.penup()
+        self.pen.forward(radius)
+        # Draw
+        self.pen.pendown()
+        self.pen.setheading(0)
+        self.pen.circle(radius)
+        # Reset
+        self.pen.penup()
+        self.pen.goto(*start_pos)
+        self.pen.setheading(start_heading)
+        self.pen.pendown()
+
     def shape(self, shape: str):
         self.pen.shape(shape)
 
@@ -75,6 +119,9 @@ class TurtleCallbacks:
 
     def bgcolor(self, color: str):
         self.screen.bgcolor(color)
+
+    def width(self, width: int):
+        self.pen.width(width)
 
     def goto(self, x: int, y: int):
         self.pen.goto(x, y)
@@ -96,6 +143,8 @@ class TurtleCallbacks:
 
     # Fractals
     def tree_fractal(self, branch_length, shorten_by, angle):
+        orig_delay = self.screen.delay()
+        self.screen.delay(0)
         if branch_length > self.MINIMUM_BRANCH_LENGTH:
             self.pen.forward(branch_length)
             new_length = branch_length - shorten_by
@@ -105,6 +154,7 @@ class TurtleCallbacks:
             self.tree_fractal(new_length, shorten_by, angle)
             self.pen.left(angle)
             self.pen.backward(branch_length)
+        self.screen.delay(orig_delay)
 
     def koch_line(self, branch_length: float, scale: float):  # shorten by 1/3 every time
         if branch_length > 3:
@@ -141,4 +191,7 @@ class TurtleCallbacks:
         self.pen.pendown()
 
     def koch_snowflake(self, sides: int, depth: int, scale: float = 1.0):
+        orig_delay = self.screen.delay()
+        self.screen.delay(0)
         self._koch_snowflake(3**depth, sides, scale)
+        self.screen.delay(orig_delay)

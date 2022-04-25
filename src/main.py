@@ -27,6 +27,7 @@ import tkinter as tk
 from tkextrafont import Font
 from queue import Queue
 import os
+import sys
 from colorama import Fore, Back, Style
 from command_lib import Command, CommandSet, InvalidCommandError
 from callbacks import TurtleCallbacks
@@ -103,24 +104,26 @@ class App:
                                                      self.add_to_console,
                                                      self.clear_console)
         self.clear_console()
+        os.makedirs(helpers.resource_path("saves"), exist_ok=True)
 
     def console_input(self, event):
-        string = event.widget.get("1.0", tk.END + " -1 char")
-        self.add_to_console(f"{Fore.LIGHTWHITE_EX}>> {string}{Style.RESET_ALL}")
-        event.widget.delete("1.0", tk.END)
-        event.widget.insert("1.0",
-                            "Working...",
-                            self._tag_from_params("normal",
-                                                  helpers.ansi_to_hex(Fore.LIGHTYELLOW_EX)[1],
-                                                  "None",
-                                                  event.widget))
-        event.widget.configure(state=tk.DISABLED)
-        try:
-            self.standardCommandSet.user_input(string)
-            event.widget.configure(state=tk.NORMAL)
-            event.widget.after(0, lambda: event.widget.delete("1.0", tk.END))
-        except tk.TclError:  # Quit run, widget no longer exists
-            pass
+        if event.widget.cget('state') == tk.NORMAL:
+            string = event.widget.get("1.0", tk.END + " -1 char")
+            self.add_to_console(f"{Fore.LIGHTBLACK_EX}>>{Fore.LIGHTWHITE_EX} {string}{Style.RESET_ALL}")
+            event.widget.delete("1.0", tk.END)
+            event.widget.insert("1.0",
+                                "Working...",
+                                self._tag_from_params("normal",
+                                                      helpers.ansi_to_hex(Fore.LIGHTYELLOW_EX)[1],
+                                                      "None",
+                                                      event.widget))
+            event.widget.configure(state=tk.DISABLED)
+            try:
+                self.standardCommandSet.user_input(string)
+                event.widget.configure(state=tk.NORMAL)
+                event.widget.after(0, lambda: event.widget.delete("1.0", tk.END))
+            except tk.TclError:  # Quit run, widget no longer exists
+                pass
 
     def clear_console(self):
         self.console_out.configure(state=tk.NORMAL)  # We need to be able to write

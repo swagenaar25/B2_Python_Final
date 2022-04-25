@@ -171,7 +171,7 @@ class CommandSet:
         for command in self.history_keeper.history:
             try:
                 if show_out:
-                    self.output(f"{Fore.LIGHTWHITE_EX}>> {command}{Style.RESET_ALL}")
+                    self.output(f"{Fore.LIGHTBLACK_EX}>>{Fore.LIGHTWHITE_EX} {command}{Style.RESET_ALL}")
                 self._execute(command)
             except Exception as e:  # noqa
                 problem = f"Something went wrong while loading command [{command}]:\n\t"
