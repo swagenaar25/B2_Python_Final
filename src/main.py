@@ -116,11 +116,21 @@ class App:
         self.clear_console()
         os.makedirs(helpers.resource_path("saves"), exist_ok=True)
 
-        self.confirm_license_acceptance()
+        # self.confirm_license_acceptance()
 
     def confirm_license_acceptance(self):
-        dialog = helpers.LicenseConfirmationPopup(self.canvas)
+        dialog = helpers.LicenseConfirmationPopup(self.canvas, self.get_font)
         print(dialog.accepted)
+
+    def get_font(self, bold: bool = False, italic: bool = False):
+        if bold and italic:
+            return self.fonts["bold_italic"]
+        elif bold:
+            return self.fonts["bold"]
+        elif italic:
+            return self.fonts["italic"]
+        else:
+            return self.fonts["regular"]
 
     def console_input(self, event):
         if event.widget.cget('state') == tk.NORMAL:
@@ -271,16 +281,6 @@ class App:
 
     def press(self):
         self.do_stuff()
-
-    def get_font(self, bold: bool = False, italic: bool = False):
-        if bold and italic:
-            return self.fonts["bold_italic"]
-        elif bold:
-            return self.fonts["bold"]
-        elif italic:
-            return self.fonts["italic"]
-        else:
-            return self.fonts["regular"]
 
 
 if __name__ == '__main__':

@@ -34,9 +34,7 @@ import os
 import sys
 import typing
 
-
 LICENSE_VERSION = "1"  # Change this if license changes, will require user to re-accept license
-
 
 # input color: 007F00 italic
 ansi_fore_to_hex = {
@@ -171,14 +169,30 @@ Copyright (C) 2022  Sam Wagenaar
 
 
 class LicenseConfirmationPopup(Dialog):
-    def __init__(self, parent: Misc | None):
+    def __init__(self, parent: Misc | None, get_font):
+        self.license_text = None
         self.scrollable_license_frame = None
         self.accepted = False
+        self.get_font = get_font
         super().__init__(parent, "Accept License?")
 
     def body(self, master) -> None:
         self.scrollable_license_frame = tk.Frame(master)
-        pass
+        text = license_notice()
+        width = 0
+        for line in text.split("\n"):
+            width = max(width, len(line))
+        self.license_text = tk.Text(self.scrollable_license_frame,
+                                    height=20,
+                                    width=width,
+                                    background="#2b2b2b",
+                                    foreground="#ff00ff",
+                                    font=self.get_font())
+        self.license_text.insert("0.0", text)
+        self.license_text.configure(state=tk.DISABLED)
+        self.license_text.pack(side=tk.LEFT, fill=tk.BOTH)
+
+        self.scrollable_license_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
     def buttonbox(self):
         """add standard button box.
