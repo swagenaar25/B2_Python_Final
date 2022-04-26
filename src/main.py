@@ -116,11 +116,17 @@ class App:
         self.clear_console()
         os.makedirs(helpers.resource_path("saves"), exist_ok=True)
 
-        # self.confirm_license_acceptance()
+        self.confirm_license_acceptance()
 
     def confirm_license_acceptance(self):
-        dialog = helpers.LicenseConfirmationPopup(self.canvas, self.get_font)
-        print(dialog.accepted)
+        if not helpers.has_accepted_license():  # We need to accept license
+            dialog = helpers.LicenseConfirmationPopup(self.canvas, self.get_font)
+            if dialog.accepted:
+                print("License accepted")
+                helpers.set_accepted_license()
+            else:
+                print("Rejected, quitting")
+                self.master.destroy()
 
     def get_font(self, bold: bool = False, italic: bool = False):
         if bold and italic:

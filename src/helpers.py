@@ -139,13 +139,16 @@ def uuid() -> str:
 
 def has_accepted_license() -> bool:
     """Check whether user has accepted our license"""
-    with open(external_path(".license_accepted.txt")) as file:
-        return file.read().split("\n")[0] == LICENSE_VERSION
+    try:
+        with open(external_path(".license_accepted.txt")) as file:
+            return file.read().split("\n")[0] == LICENSE_VERSION
+    except FileNotFoundError:
+        return False
 
 
 def set_accepted_license():
     """Record that the user has accepted the latest license"""
-    with open(external_path(".license_path.txt"), "w") as file:
+    with open(external_path(".license_accepted.txt"), "w") as file:
         file.write(LICENSE_VERSION)
 
 
@@ -168,8 +171,14 @@ Copyright (C) 2022  Sam Wagenaar
 """
 
 
+def get_full_license() -> str:
+    return "Copyright (C) 2022  Sam Wagenaar\n\n\n" + open(resource_path("LICENSE.txt")).read()
+
+
 class LicenseConfirmationPopup(Dialog):
     def __init__(self, parent: Misc | None, get_font):
+        self.bottom_text = None
+        self.license_scrollbar = None
         self.license_text = None
         self.scrollable_license_frame = None
         self.accepted = False
@@ -178,7 +187,7 @@ class LicenseConfirmationPopup(Dialog):
 
     def body(self, master) -> None:
         self.scrollable_license_frame = tk.Frame(master)
-        text = license_notice()
+        text = get_full_license()
         width = 0
         for line in text.split("\n"):
             width = max(width, len(line))
@@ -186,13 +195,31 @@ class LicenseConfirmationPopup(Dialog):
                                     height=20,
                                     width=width,
                                     background="#2b2b2b",
-                                    foreground="#ff00ff",
+                                    foreground="#ffffff",
                                     font=self.get_font())
         self.license_text.insert("0.0", text)
         self.license_text.configure(state=tk.DISABLED)
         self.license_text.pack(side=tk.LEFT, fill=tk.BOTH)
 
+        self.license_scrollbar = tk.Scrollbar(self.scrollable_license_frame,
+                                              command=self.license_text.yview,
+                                              orient=tk.VERTICAL)
+        self.license_text['yscrollcommand'] = self.license_scrollbar.set
+        self.license_scrollbar.pack(side=tk.LEFT, fill=tk.Y)
+
         self.scrollable_license_frame.pack(side=tk.TOP, fill=tk.BOTH)
+
+        agree_text = "By clicking 'Accept', you agree that you have read and understood the above license"
+        self.bottom_text = tk.Text(master,
+                                   height=2,
+                                   background="#ffffff",
+                                   foreground="#2b2b2b",
+                                   width=width,
+                                   relief=tk.FLAT,
+                                   font=self.get_font())
+        self.bottom_text.insert("0.0", agree_text)
+        self.bottom_text.configure(state=tk.DISABLED)
+        self.bottom_text.pack(side=tk.TOP, fill=tk.NONE)
 
     def buttonbox(self):
         """add standard button box.
