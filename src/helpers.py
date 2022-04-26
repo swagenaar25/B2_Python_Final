@@ -34,7 +34,7 @@ import os
 import sys
 import typing
 
-LICENSE_VERSION = "1"  # Change this if license changes, will require user to re-accept license
+LICENSE_VERSION = "2"  # Change this if license changes, will require user to re-accept license
 
 # input color: 007F00 italic
 ansi_fore_to_hex = {
@@ -209,7 +209,8 @@ class LicenseConfirmationPopup(Dialog):
 
         self.scrollable_license_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
-        agree_text = "By clicking 'Accept', you agree that you have read and understood the above license"
+        agree_text = "Use of this program constitutes acceptance of the above license."
+        agree_text += "\nIf you do not accept these terms, press 'Cancel' now."
         self.bottom_text = tk.Text(master,
                                    height=2,
                                    background="#ffffff",
@@ -240,10 +241,8 @@ class LicenseConfirmationPopup(Dialog):
         box.pack()
 
     def accept(self, event=None):
-        print("accepted")
         self.accepted = True
         self.destroy()
 
     def cancel(self, event=None):
-        print("canceled")
         self.destroy()
