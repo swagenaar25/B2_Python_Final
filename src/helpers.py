@@ -1,4 +1,3 @@
-__all__ = ["error_format", "error_string", "random_color", "resource_path", "uuid", "license_notice", "ansi_to_hex"]
 """
 Copyright (C) 2022  Sam Wagenaar
 
@@ -15,12 +14,28 @@ Copyright (C) 2022  Sam Wagenaar
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+__all__ = ["error_format",
+           "error_string",
+           "random_color",
+           "resource_path",
+           "uuid",
+           "license_notice",
+           "ansi_to_hex",
+           "has_accepted_license",
+           "external_path",
+           "LicenseConfirmationPopup"]
 
+from tkinter import Misc
+import tkinter as tk
 from colorama import Fore, Back
+from tkinter.simpledialog import Dialog
 import random
 import os
 import sys
 import typing
+
+
+LICENSE_VERSION = "1"  # Change this if license changes, will require user to re-accept license
 
 
 # input color: 007F00 italic
@@ -107,6 +122,14 @@ def resource_path(relative_path: str) -> str:
     return os.path.join(base_path, relative_path)
 
 
+def external_path(relative_path: str) -> str:
+    is_frozen = getattr(sys, 'frozen', False)
+    if is_frozen:
+        return os.path.join(os.path.dirname(os.path.abspath(sys.executable)), relative_path)
+    else:
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+
+
 def uuid() -> str:
     """Generate simple unique id"""
     chars = "1234567890qwertyuiopasdfghjklzxcvbnm"
@@ -114,6 +137,18 @@ def uuid() -> str:
     for _ in range(16):
         out += random.choice(chars)
     return out
+
+
+def has_accepted_license() -> bool:
+    """Check whether user has accepted our license"""
+    with open(external_path(".license_accepted.txt")) as file:
+        return file.read().split("\n")[0] == LICENSE_VERSION
+
+
+def set_accepted_license():
+    """Record that the user has accepted the latest license"""
+    with open(external_path(".license_path.txt"), "w") as file:
+        file.write(LICENSE_VERSION)
 
 
 def license_notice() -> str:
@@ -133,3 +168,41 @@ Copyright (C) 2022  Sam Wagenaar
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
+
+class LicenseConfirmationPopup(Dialog):
+    def __init__(self, parent: Misc | None):
+        self.scrollable_license_frame = None
+        self.accepted = False
+        super().__init__(parent, "Accept License?")
+
+    def body(self, master) -> None:
+        self.scrollable_license_frame = tk.Frame(master)
+        pass
+
+    def buttonbox(self):
+        """add standard button box.
+
+        override if you do not want the standard buttons
+        """
+
+        box = tk.Frame(self)
+
+        w = tk.Button(box, text="Accept", width=10, command=self.accept, default=tk.ACTIVE)
+        w.pack(side=tk.LEFT, padx=5, pady=5)
+        w = tk.Button(box, text="Cancel", width=10, command=self.cancel)
+        w.pack(side=tk.LEFT, padx=5, pady=5)
+
+        # self.bind("<Return>", self.accept)
+        self.bind("<Escape>", self.cancel)
+
+        box.pack()
+
+    def accept(self, event=None):
+        print("accepted")
+        self.accepted = True
+        self.destroy()
+
+    def cancel(self, event=None):
+        print("canceled")
+        self.destroy()

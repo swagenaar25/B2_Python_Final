@@ -1,6 +1,3 @@
-__all__ = ["InvalidCommandError", "Command", "CommandSet"]
-__version__ = "1.0"
-__author__ = "Sam Wagenaar"
 """
 Copyright (C) 2022  Sam Wagenaar
 
@@ -17,6 +14,9 @@ Copyright (C) 2022  Sam Wagenaar
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+__all__ = ["InvalidCommandError", "Command", "CommandSet"]
+__version__ = "1.0"
+__author__ = "Sam Wagenaar"
 
 import typing
 import os
@@ -129,6 +129,7 @@ class Command:
         self.callback_args = callback_args
         if len(self.types) != self.num_args:
             raise InvalidCommandError("Each argument needs a type")
+        self.show_help = True  # True by default, require command set to modify if applicable
 
     def execute(self, string: str) -> typing.Any:
         """Execute the command based on user input.
@@ -160,8 +161,12 @@ class CommandSet:
         self.commands = {}
         self.register(Command("help", "Display help for all commands", 0, [], self.help))
         self.register(Command("help", "Display help for specified ```command```", 1, [str], self.help))
+        self.help_break()
+
         self.register(Command("save", "Save current drawing to ```file```", 1, [str], self.save))
         self.register(Command("load", "Load drawing from ```file```", 1, [str], self.load))
+        self.help_break()
+
         self.register(Command("undo", "Undo previous command (does not work on reset)", 0, [], self.undo))
         self.output = output
         self.callbacks = callbacks
@@ -197,7 +202,23 @@ class CommandSet:
     def help(self, command: str = None):
         if command is None:
             for name in self.commands:
-                self.help(name)
+                value = self.commands[name]
+                # If a specific command is specified (even aliased), show full help
+                # But, since we are listing all commands here, an aliased command should simply state its aliasing
+                if type(value) == tuple:
+                    if value[0] == "ALIAS":
+                        help_msg = f"{Style.BRIGHT}{Fore.GREEN}"
+                        help_msg += name
+                        help_msg += f"{Fore.CYAN}{Style.NORMAL} -> {Fore.GREEN}{Style.BRIGHT}"
+                        help_msg += value[1]
+                        help_msg += Style.RESET_ALL
+                        self.output(help_msg)
+                    elif value[0] == "BREAK":
+                        self.output("")
+                    else:  # No idea what this is, maybe the specific help does?
+                        self.help(name)
+                else:
+                    self.help(name)
         else:
             try:
                 commands = self.commands[command]
@@ -207,6 +228,8 @@ class CommandSet:
                     else:
                         return
                 for com in commands:
+                    if not com.show_help:
+                        continue
                     arg_list = arg_names(com.callback)
                     if len(arg_list) > 0 and arg_list[0] == "self":
                         arg_list = arg_list[1:]
@@ -223,11 +246,12 @@ class CommandSet:
             except KeyError:
                 raise InvalidCommandError(f"Command not found: {command}")
 
-    def register(self, command: Command):
+    def register(self, command: Command, show_help: bool = True):
         """Register a command."""
         registry = self.commands.get(command.name, OrderedSet())
         registry.add(command)
         self.commands[command.name] = registry
+        command.show_help = show_help
 
     def alias(self, original: str, aliased: str):
         """Create an alias for commands
@@ -237,6 +261,13 @@ class CommandSet:
         :return: None
         """
         self.commands[aliased] = ("ALIAS", original)
+
+    def help_break(self):
+        """Create a newline in the help message
+
+        :return: None
+        """
+        self.commands[helpers.uuid()] = ("BREAK",)
 
     def execute(self, string: str) -> typing.Any:
         """Wrapper around self._execute to handle exceptions"""
@@ -268,6 +299,8 @@ class CommandSet:
                 string = name
                 if len(parts) > 1:
                     string += " " + " ".join(parts[1:])
+            elif possibilities[0] == "BREAK":
+                return
             else:
                 raise InvalidCommandError(f"Broken registration for command {name}, user input {string}")
         if len(possibilities) == 0:

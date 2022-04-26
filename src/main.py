@@ -29,12 +29,21 @@ from queue import Queue
 import os
 import sys
 from colorama import Fore, Back, Style
+import time
 from command_lib import Command, CommandSet, InvalidCommandError
 from callbacks import TurtleCallbacks
 from standard_command_set import StandardCommandSet
 import helpers
 
-helpers.license_notice()
+print(helpers.license_notice())
+
+# Ensure dictionary insertion-ordering
+test_dict = {}  # noqa
+test_dict["pear"] = "nothing"
+test_dict["apple"] = "everything"
+if list(test_dict)[0] == "apple":  # That would happen if alphabetically ordered, not if insertion ordered
+    raise NotImplementedError("This program requires dictionary insertion ordering, try using CPython >= 3.6, "
+                              + "or another supporting implementation")
 
 kg = True
 
@@ -51,6 +60,7 @@ class App:
     def __init__(self, master: tk.Tk):
         self.master = master
         self.master.title("Final Project Sam Wagenaar")
+
         self.canvas = tk.Canvas(master)
         self.canvas.config(width=600, height=600)
         self.canvas.pack(side=tk.LEFT)
@@ -105,6 +115,12 @@ class App:
                                                      self.clear_console)
         self.clear_console()
         os.makedirs(helpers.resource_path("saves"), exist_ok=True)
+
+        self.confirm_license_acceptance()
+
+    def confirm_license_acceptance(self):
+        dialog = helpers.LicenseConfirmationPopup(self.canvas)
+        print(dialog.accepted)
 
     def console_input(self, event):
         if event.widget.cget('state') == tk.NORMAL:

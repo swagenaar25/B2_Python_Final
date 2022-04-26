@@ -47,21 +47,26 @@ class StandardCommandSet:
         self.commandSet = CommandSet(self.output_callback, self.call)
 
         self.commandSet.register(Command("penup", "Raise pen", 0, [], self.call.penup))
-        self.commandSet.register(Command("pendown", "Lower pen\n", 0, [], self.call.pendown))
+        self.commandSet.register(Command("pendown", "Lower pen", 0, [], self.call.pendown))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("forward", "Move forward 50 pixels", 0, [], self.call.forward, [50]))
         self.commandSet.register(
-            Command("forward", "Move forward ```distance``` pixels\n", 1, [int], self.call.forward))
+            Command("forward", "Move forward ```distance``` pixels", 1, [int], self.call.forward))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("back", "Move back 50 pixels", 0, [], self.call.back, [50]))
-        self.commandSet.register(Command("back", "Move back ```distance``` pixels\n", 1, [int], self.call.back))
+        self.commandSet.register(Command("back", "Move back ```distance``` pixels", 1, [int], self.call.back))
         self.commandSet.alias("back", "backward")
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("right", "Turn right 90 degrees", 0, [], self.call.right, [90]))
-        self.commandSet.register(Command("right", "Turn right ```angle``` degrees\n", 1, [int], self.call.right))
+        self.commandSet.register(Command("right", "Turn right ```angle``` degrees", 1, [int], self.call.right))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("left", "Turn left 90 degrees", 0, [], self.call.left, [90]))
-        self.commandSet.register(Command("left", "Turn left ```angle``` degrees\n", 1, [int], self.call.left))
+        self.commandSet.register(Command("left", "Turn left ```angle``` degrees", 1, [int], self.call.left))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command(
             "circle",
@@ -78,8 +83,12 @@ class StandardCommandSet:
             self.call.polygon
         ))
         self.commandSet.alias("polygon", "poly")
+        self.commandSet.help_break()
+
         self.commandSet.register(Command("random", "Plot 20 random lines", 0, [], self.call.random, [20]))
         self.commandSet.register(Command("random", "Plot ```number``` random lines", 1, [int], self.call.random))
+        self.commandSet.help_break()
+
         self.commandSet.register(Command(
             "tree_fractal",
             "Plot a tree fractal with starting branch length of 50, shortening of 5, and angle of 30",
@@ -96,6 +105,8 @@ class StandardCommandSet:
             self.call.tree_fractal
         ))
         self.commandSet.alias("tree_fractal", "tree")
+        self.commandSet.help_break()
+
         self.commandSet.register(Command(
             "koch_snowflake",
             "Plot a 3-sided koch snowflake fractal with a depth of 5",
@@ -120,25 +131,32 @@ class StandardCommandSet:
         ))
         self.commandSet.alias("koch_snowflake", "snowflake")
         self.commandSet.alias("snowflake", "snow")
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("color", "Set pen to ```color```", 1, [str], self.call.color))
         self.commandSet.register(Command("bgcolor", "Set background to ```color```", 1, [str], self.call.bgcolor))
         self.commandSet.alias("bgcolor", "bg")
+        self.commandSet.help_break()
+
         self.commandSet.register(Command("width", "Set pen width to ```width```", 1, [int], self.call.width))
         self.commandSet.register(Command("shape", "List pen shapes", 0, [], self.call.shapes))
-        self.commandSet.register(Command("shape", "Set pen shape to ```shape```\n", 1, [str], self.call.shape))
+        self.commandSet.register(Command("shape", "Set pen shape to ```shape```", 1, [str], self.call.shape))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("sleep", "Wait ```secs``` seconds", 1, [float], self.call.sleep))
         self.commandSet.register(Command("delay", "Set drawing delay to ```millis``` ms", 1, [int], self.call.delay))
-        self.commandSet.register(Command("goto", "Move pen to (```x```, ```y```)\n", 2, [int, int], self.call.goto))
+        self.commandSet.register(Command("goto", "Move pen to (```x```, ```y```)", 2, [int, int], self.call.goto))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("pos", "Show pen's position", 0, [], self.call.pos))
         self.commandSet.register(Command("heading", "Show pen's heading", 0, [], self.call.heading))
+        self.commandSet.help_break()
 
         self.commandSet.register(Command("reset", "Reset everything", 0, [], self.call.reset))
-        self.commandSet.register(Command("clear", "Clear console\n", 0, [], self.call.clear))
+        self.commandSet.register(Command("clear", "Clear console", 0, [], self.call.clear))
+        self.commandSet.help_break()
 
-        self.commandSet.register(Command("quit", "Close the canvas\n", 0, [], self.quit_callback))
+        self.commandSet.register(Command("quit", "Close the canvas", 0, [], self.quit_callback))
         self.commandSet.alias("quit", "exit")
 
     def user_input(self, string: str):
