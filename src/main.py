@@ -24,7 +24,6 @@ Class: Intro to Programming
 
 import turtle
 import tkinter as tk
-from tkextrafont import Font
 from queue import Queue
 import os
 import sys
@@ -35,7 +34,22 @@ from callbacks import TurtleCallbacks
 from standard_command_set import StandardCommandSet
 import helpers
 
+tkextrafont_loaded = True
+try:
+    from tkextrafont import Font
+except ModuleNotFoundError:
+    tkextrafont_loaded = False
+    import pyglet
+    from tkinter.font import Font
+
+    for variant in ["Bold", "BoldItalic", "Italic", "Regular"]:
+        pyglet.font.add_file(helpers.resource_path(
+            os.path.join("assets", "fonts", "FantasqueSansMono-" + variant + ".ttf")))
+
 print(helpers.license_notice())
+
+if not tkextrafont_loaded:
+    print("tkextrafont could not be found, using pyglet-based backup")
 
 # Ensure dictionary insertion-ordering
 test_dict = {}  # noqa
@@ -66,22 +80,36 @@ class App:
         self.canvas.pack(side=tk.LEFT)
         self.screen = turtle.TurtleScreen(self.canvas)
 
-        self.fonts = {"regular": Font(file="assets/fonts/FantasqueSansMono-Regular.ttf",
-                                      family="Fantasque Sans Mono",
-                                      size=13),
-                      "bold": Font(file="assets/fonts/FantasqueSansMono-Bold.ttf",
-                                   family="Fantasque Sans Mono",
-                                   size=13,
-                                   weight="bold"),
-                      "italic": Font(file="assets/fonts/FantasqueSansMono-Italic.ttf",
-                                     family="Fantasque Sans Mono",
-                                     size=13,
-                                     slant="italic"),
-                      "bold_italic": Font(file="assets/fonts/FantasqueSansMono-BoldItalic.ttf",
-                                          family="Fantasque Sans Mono",
-                                          size=13,
-                                          weight="bold",
-                                          slant="italic")}
+        if tkextrafont_loaded:
+            self.fonts = {"regular": Font(file="assets/fonts/FantasqueSansMono-Regular.ttf",
+                                          family="Fantasque Sans Mono Regular",
+                                          size=13),
+                          "bold": Font(file="assets/fonts/FantasqueSansMono-Bold.ttf",
+                                       family="Fantasque Sans Mono Bold",
+                                       size=13,
+                                       weight="bold"),
+                          "italic": Font(file="assets/fonts/FantasqueSansMono-Italic.ttf",
+                                         family="Fantasque Sans Mono Italic",
+                                         size=13,
+                                         slant="italic"),
+                          "bold_italic": Font(file="assets/fonts/FantasqueSansMono-BoldItalic.ttf",
+                                              family="Fantasque Sans Mono Bold Italic",
+                                              size=13,
+                                              weight="bold",
+                                              slant="italic")}
+        else:
+            self.fonts = {"regular": Font(family="Fantasque Sans Mono Regular",
+                                          size=13),
+                          "bold": Font(family="Fantasque Sans Mono Bold",
+                                       size=13,
+                                       weight="bold"),
+                          "italic": Font(family="Fantasque Sans Mono Italic",
+                                         size=13,
+                                         slant="italic"),
+                          "bold_italic": Font(family="Fantasque Sans Mono Bold Italic",
+                                              size=13,
+                                              weight="bold",
+                                              slant="italic")}
 
         self.console_frame = tk.Frame(self.master)
         self.console_frame.pack(side=tk.RIGHT, fill=tk.BOTH)

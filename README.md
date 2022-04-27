@@ -1,8 +1,11 @@
 # TurtleShell
 ## Purpose
 An easy way to draw semi-programmatically with turtle
-## Information
-TODO
+## Dependencies
+* colorama
+* ordered-set
+* tkextrafont *OR* pyglet
+* python3.10
 ## Licensing
 Code is licensed under the **GPL-v3 license or any later version** which can be read
 in the attached [LICENSE.txt](LICENSE.txt) file, or online at
