@@ -1,0 +1,212 @@
+penup
+goto -100 -100
+goto -300 300
+goto -250 250
+goto -240 240
+circle 20
+penup
+forward 20
+pendown
+left
+right 180
+forward 10
+forward 30
+forward 10
+right 5
+right 5
+right 5
+forward 5
+right 15
+forward 5
+right 20
+forward 8
+heading
+right 20
+forward 15
+right 20
+heading
+forward 5
+forward 5
+penup
+goto -240 240
+right 180
+right
+forward 20
+left
+forward 40
+forward 20
+back 5
+back 2
+left
+pendown
+forward 40
+back 5
+right 10
+forward 2
+right 13
+forward 2
+right 17
+forward 2
+forward 4
+right 17
+forward 10
+right 10
+forward 7
+right 10
+heading
+right 13
+heading
+forward 10
+forward 10
+penup
+goto -240 240
+goto -240 220
+goto -200 240
+goto -200 220
+goto -180 220
+goto -160 220
+goto -120 220
+goto -120 220
+left 60
+left 10
+heading
+forward 40
+back 40
+pendown
+forward 50
+right 140
+forward 50
+back 25
+left 70
+left 180
+forward 10
+forward 5
+forward 5
+forward 1
+forward 1
+penup
+goto -120 220
+goto -60 220
+goto -60 220
+right
+forward 50
+back 50
+pendown
+forward 50
+right
+right 5
+forward 5
+right 10
+forward 20
+right 10
+right 10
+right 15
+forward 10
+forward 15
+right 15
+right 25
+right 15
+forward 15
+forward 5
+right 5
+right 10
+forward 5
+right 10
+goto -60 220
+heading
+left 230
+heading
+right 100
+heading
+penup
+goto 0 220
+goto 0 220
+pendown
+forward 30
+back 30
+right
+left 180
+forward 30
+right
+forward 22
+back 22
+left
+forward 30
+right
+forward 30
+color green
+penup
+goto -50 -10
+left 70
+forward 100
+back 100
+width 5
+pendown
+forward 100
+right 140
+forward 100
+back 50
+left 70
+right 180
+forward 10
+forward 10
+forward 10
+forward 5
+back 10
+penup
+right
+right
+forward 10
+forward 20
+forward 30
+forward 10
+width 4
+pendown
+forward 30
+back 30
+forward 40
+back 20
+right
+forward 20
+back 40
+width 1
+penup
+goto 100 100
+goto 0 50
+goto 0 -100
+goto 0 -150
+color gold
+left
+snow 3 5 0.75
+penup
+sleep 3
+goto 60 -150
+color teal
+pendown
+tree
+width 2
+tree
+penup
+goto -60 -150
+right 180
+width 1
+pendown
+tree
+width 2
+tree
+penup
+goto 0 -150
+right
+color lime
+width 1
+sleep 2
+circle 62
+sleep 1
+polygon 105 3
+right 60
+polygon 105 3
+color magenta
+snow 3 5 0.75
+left 60
+color salmon
+snow 3 5 0.5
