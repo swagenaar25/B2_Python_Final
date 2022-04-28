@@ -4,7 +4,7 @@ An easy way to draw semi-programmatically with turtle
 ## Dependencies
 * colorama
 * ordered-set
-* tkextrafont *OR* pyglet
+* tkextrafont (only on windows) *OR* pyglet
 * python3.10
 ## Licensing
 Code is licensed under the **GPL-v3 license or any later version** which can be read
