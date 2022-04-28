@@ -36,7 +36,7 @@ import random
 import os
 import sys
 
-LICENSE_VERSION = "2"  # Change this if license changes, will require user to re-accept license
+LICENSE_VERSION = "1"  # Change this if license changes, will require user to re-accept license
 
 # input color: 007F00 italic
 ansi_fore_to_hex = {
@@ -174,7 +174,7 @@ Copyright (C) 2022  Sam Wagenaar
 
 
 def get_full_license() -> str:
-    return "Copyright (C) 2022  Sam Wagenaar\n\n\n" + open(resource_path("LICENSE.txt")).read()
+    return "Copyright (C) 2022  Sam Wagenaar\n\n\n" + open(resource_path("assets/CODE_LICENSE.txt")).read()
 
 
 class LicenseConfirmationPopup(Dialog):
