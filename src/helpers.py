@@ -24,16 +24,18 @@ __all__ = ["error_format",
            "ansi_to_hex",
            "has_accepted_license",
            "external_path",
-           "LicenseConfirmationPopup"]
+           "LicenseConfirmationPopup",
+           "rr"]
 
 from tkinter import Misc
 import tkinter as tk
 from colorama import Fore, Back
 from tkinter.simpledialog import Dialog
+import webbrowser
 import random
 import os
 import sys
-import typing
+import pytube
 
 LICENSE_VERSION = "2"  # Change this if license changes, will require user to re-accept license
 
@@ -247,3 +249,7 @@ class LicenseConfirmationPopup(Dialog):
 
     def cancel(self, event=None):
         self.destroy()
+
+
+def rr():
+    webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", -1, True)

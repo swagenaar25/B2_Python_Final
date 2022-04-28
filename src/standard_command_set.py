@@ -17,10 +17,10 @@ Copyright (C) 2022  Sam Wagenaar
 __all__ = ["StandardCommandSet"]
 
 import turtle
+import typing
 from callbacks import TurtleCallbacks
 from command_lib import CommandSet, Command
-from helpers import error_format, error_string
-import typing
+from helpers import error_format, error_string, rr
 
 
 class StandardCommandSet:
@@ -158,6 +158,8 @@ class StandardCommandSet:
 
         self.commandSet.register(Command("quit", "Close the canvas", 0, [], self.quit_callback))
         self.commandSet.alias("quit", "exit")
+
+        self.commandSet.register(Command("rr", "Never gonna give you up...", 0, [], rr), False)
 
     def user_input(self, string: str):
         """Run command from user input
