@@ -35,7 +35,6 @@ import webbrowser
 import random
 import os
 import sys
-import pytube
 
 LICENSE_VERSION = "2"  # Change this if license changes, will require user to re-accept license
 
