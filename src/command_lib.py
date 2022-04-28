@@ -74,7 +74,7 @@ class HistoryKeeper:
         :return: None
         """
         name = os.path.basename(name).split(".")[0]+".txt"
-        file_path = helpers.resource_path(os.path.join("saves", name))
+        file_path = helpers.external_path(os.path.join("saves", name))
         out = ""
         for command in self.history:
             out += command + "\n"
@@ -88,10 +88,16 @@ class HistoryKeeper:
         :param name: File to load from
         :return: None
         """
-        self.reset()
         name = os.path.basename(name).split(".")[0]+".txt"
-        file_path = helpers.resource_path(os.path.join("saves", name))
+        file_path = helpers.external_path(os.path.join("saves", name))
+        if not os.path.exists(file_path):
+            file_path = helpers.resource_path(os.path.join("assets", "builtin_saves", name))
+        if not os.path.exists(file_path):  # Make sure the error is with the normal path if it fails to locate
+            file_path = helpers.external_path(os.path.join("saves", name))
+        file_path = os.path.abspath(file_path)
         contents = open(file_path).read().split("\n")
+        # Don't reset until after file confirmed exists
+        self.reset()
         for command in contents:
             if command != "" and command != "quit" and command != "exit":
                 self.add(command)
@@ -190,8 +196,9 @@ class CommandSet:
         self.output(f"Undid one command: {name}")
 
     def load(self, file: str):
-        self.callbacks.clear()
         self.history_keeper.load(file)
+        # Don't reset or clear until after load confirmed successful
+        self.callbacks.clear()
         self.callbacks.reset()
         self.run_history(True)
 

@@ -127,7 +127,7 @@ def external_path(relative_path: str) -> str:
     if is_frozen:
         return os.path.join(os.path.dirname(os.path.abspath(sys.executable)), relative_path)
     else:
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", relative_path)
 
 
 def uuid() -> str:
