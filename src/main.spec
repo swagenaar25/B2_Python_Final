@@ -32,3 +32,7 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=True )
+app = BUNDLE(exe,
+         name='easy_turtle_draw.app',
+         icon=None,
+         bundle_identifier=None)
