@@ -49,6 +49,7 @@ jobs:
         with:
           files: dist/easy_turtle_draw.app LICENSE.txt README.md
           dest: macOS_binaries.zip
+          recursive: false
       #auto release
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
