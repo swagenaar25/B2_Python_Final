@@ -45,9 +45,9 @@ jobs:
           name: packaged-binaries
           path: dist
       - name: Zip up app
-        run: zip -jr9 easy_turtle_draw.zip dist/easy_turtle_draw.app LICENSE.txt README.md
+        run: cd dist && zip -r9 easy_turtle_draw.zip easy_turtle_draw.app ../LICENSE.txt ../README.md
       - name: Echo directory 2
-        run: ls
+        run: ls; ls dist
       #zip up files
       #- uses: papeloto/action-zip@v1
       #  with:
@@ -63,5 +63,5 @@ jobs:
           title: "Development Build - MacOS"
           files: |
             LICENSE.txt
-            easy_turtle_draw.zip
+            dist/easy_turtle_draw.zip
           #  macOS_binaries.zip
