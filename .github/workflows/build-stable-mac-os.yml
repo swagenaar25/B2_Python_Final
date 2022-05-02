@@ -43,7 +43,7 @@ jobs:
           name: packaged-binaries
           path: dist
       - name: Zip up app
-        run: cd dist && zip -r9 easy_turtle_draw.zip easy_turtle_draw.app ../LICENSE.txt ../README.md
+        run: cd dist && cp ../LICENSE.txt ./LICENSE.txt && cp ../README.md ./README.md && zip -r9 easy_turtle_draw.zip easy_turtle_draw.app LICENSE.txt README.md
       - name: Echo directory 2
         run: ls; ls dist
       #zip up files
