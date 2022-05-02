@@ -35,20 +35,23 @@ jobs:
       #    python3 -c "import pygame;print('hello')"
 
       - name: PyInstaller Mac Turtle Draw
-        run:
-          python3 -m PyInstaller src/main.spec
+        run: python3 -m PyInstaller src/main.spec
       - name: Echo directory
         run: ls dist
       - uses: actions/upload-artifact@v2
         with:
           name: packaged-binaries
           path: dist
+      - name: Zip up app
+        run: zip -r9 easy_turtle_draw.zip dist/easy_turtle_draw.app LICENSE.txt README.md
+      - name: Echo directory 2
+        run: ls
       #zip up files
-      - uses: papeloto/action-zip@v1
-        with:
-          files: dist/easy_turtle_draw.app LICENSE.txt README.md
-          dest: macOS_binaries.zip
-          recursive: true
+      #- uses: papeloto/action-zip@v1
+      #  with:
+      #    files: dist/easy_turtle_draw.app LICENSE.txt README.md
+      #    dest: macOS_binaries.zip
+      #    recursive: true
       #auto release
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -58,4 +61,5 @@ jobs:
           title: "Release Build - MacOS"
           files: |
             LICENSE.txt
-            macOS_binaries.zip
+            easy_turtle_draw.zip
+          #  macOS_binaries.zip
