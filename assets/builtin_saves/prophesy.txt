@@ -199,7 +199,7 @@ goto 0 -150
 right
 color lime
 width 1
-sleep 2
+sleep 1.5
 circle 62
 sleep 1
 polygon 105 3
