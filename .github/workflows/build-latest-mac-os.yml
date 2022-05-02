@@ -37,7 +37,7 @@ jobs:
 
       - name: PyInstaller Mac Turtle Draw
         run:
-          python3 -m PyInstaller src/main.spec
+          python3 -m PyInstaller --windowed src/main.spec
       - name: Echo directory
         run: ls dist
       - uses: actions/upload-artifact@v2
