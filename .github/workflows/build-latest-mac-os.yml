@@ -47,7 +47,7 @@ jobs:
       #zip up files
       - uses: papeloto/action-zip@v1
         with:
-          files: dist/easy_turtle_draw LICENSE.txt README.md
+          files: dist/easy_turtle_draw.app LICENSE.txt README.md
           dest: macOS_binaries.zip
       #auto release
       - uses: "marvinpinto/action-automatic-releases@latest"
